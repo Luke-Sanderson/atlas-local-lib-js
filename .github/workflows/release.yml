@@ -56,8 +56,8 @@ jobs:
         run: yarn build --target x86_64-unknown-linux-gnu --use-napi-cross
       - name: Commit version changes
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           git add package.json Cargo.toml index.js index.d.ts CHANGELOG.md LICENSE-3RD-PARTY.txt
           git commit -m "${{ github.event.inputs.version }}"
           git push
@@ -157,14 +157,13 @@ jobs:
         run: ls -R ./npm
         shell: bash
       - name: Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.update-version.outputs.version }}
-          release_name: Release v${{ needs.update-version.outputs.version }}
-          draft: false
-          prerelease: false
+          name: Release v${{ needs.update-version.outputs.version }}
+          files: artifacts/bindings-*/*.node
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish to NPM
         run: |
           npm config set provenance true
